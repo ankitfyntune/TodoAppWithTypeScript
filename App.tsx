@@ -1,20 +1,41 @@
+import { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, SafeAreaView, Button, ScrollView } from 'react-native';
+import Modal from './components/Modal';
+import Tab from "./components/Tab";
 
 export default function App() {
+  const [input, setInput] = useState<string>("");
+  const [todo, setTodo] = useState<any[]>([]);
+  const [visible, setVisible] = useState<boolean>(true); 
+  const addTodo = () => {
+    setTodo(todo => [input,...todo]);
+    setVisible(false);
+  }
+  const removeTodo = (index: string | number) => {
+    setTodo(todo => todo.filter((_, i) => i !== index ))
+  }
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
+    <SafeAreaView style={styles.safeAreaContainer}>
+      <Button title="Add Todo" onPress={() => setVisible(true)}/>
+      <Modal visible={visible} setInput={setInput} input={input} addTodo={addTodo} setVisible={setVisible} />
+      <ScrollView style={styles.scrollView}>
+        {todo?.map((item, index) => (
+          <Tab removeTodo={removeTodo} index={index} item={item} />
+        ))}
+      </ScrollView>
       <StatusBar style="auto" />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeAreaContainer: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    marginVertical: 30,
+    marginHorizontal: 10
   },
+  scrollView: {
+    flex: 1
+  }
 });
